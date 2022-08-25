@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px dashed red;
+}
+
+.board {
+    width: calc(64px*8);
+    height: calc(64px*8);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cell {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+}
+
+.black {
+    background-color: rgb(136, 70, 22);
+}
+
+.white {
+    background-color: rgb(239, 207, 168);
+}
+
+.img {
+    height: 80%;
+}
+
+.cell-focused {
+    opacity: 0.5
+}
+
+.cell-selected {
+    box-shadow: 0px 0px 0px 6px greenyellow inset;
+}
+
+.cell-available {
+    filter: brightness(50%);
+}
