@@ -53,3 +53,7 @@
 .cell-available {
     filter: brightness(50%);
 }
+
+.cell-attackable {
+    background-color: rgb(139, 38, 38);
+}

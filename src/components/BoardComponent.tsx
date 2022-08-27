@@ -13,20 +13,61 @@ interface BoardProps {
 
 const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
 
-    const [selectedCell, setCelectedCell] = useState<Cell | null>(null);
-    const [availableCells, setAvailableCells] = useState<Cell[]>([]);
-    const [turn, SetTurn] = useState<Colors>(Colors.WHITE);
+    const [selectedCellWithFigure, setSelectedCellWithFigure] = useState<Cell | null>(null);
+    const [availableToMoveCells, setAvailableToMoveCells] = useState<Cell[]>([]);
+    const [availableToAttackCells, setAvailableToAttackCells] = useState<Cell[]>([]);
+    const [turn, setTurn] = useState<Colors>(Colors.WHITE);
+
+    function switchTurn() {
+        const newTurn = turn === Colors.BLACK ? Colors.WHITE : Colors.BLACK;
+        setTurn(newTurn);
+    }
 
     // calculating available cells
     useEffect(() => {
-        if (!selectedCell) {
-            setAvailableCells([]);
+        if (!selectedCellWithFigure) {
+            // resetting
+            setAvailableToMoveCells([]);
+            setAvailableToAttackCells([]);
             return;
         }
 
-        const cells = board.calculateAvailableCells(selectedCell);
-        setAvailableCells(cells);
-    }, [selectedCell, board])
+        const moveCells = board.calculateAvailableToMoveCells(selectedCellWithFigure);
+        setAvailableToMoveCells(moveCells);
+
+        const attackCells = board.calculateAvailableToAttackCells(selectedCellWithFigure);
+        console.log({ attackCells });
+
+        setAvailableToAttackCells(attackCells);
+
+    }, [selectedCellWithFigure, board])
+
+    function onCellClick(cell: Cell): void {
+        if (cell.figure && cell.figure.color === turn) {
+            // selecting
+            setSelectedCellWithFigure(cell);
+        } else if (availableToMoveCells.includes(cell) && selectedCellWithFigure) {
+            // movement
+            board.moveFigure(selectedCellWithFigure, cell);
+            // deselect
+            setSelectedCellWithFigure(null);
+
+            // turn
+            switchTurn();
+        } else if (availableToAttackCells.includes(cell) && selectedCellWithFigure) {
+            // attack figure
+            board.attackFigure(selectedCellWithFigure, cell);
+
+            // deselecting
+            setSelectedCellWithFigure(null);
+
+            // turn
+            switchTurn();
+        } else if (!cell.figure && selectedCellWithFigure) {
+            //deselecting
+            setSelectedCellWithFigure(null);
+        }
+    }
 
     return (
         <div>
@@ -38,9 +79,10 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
                             <CellComponent
                                 cell={cell}
                                 key={cell.id}
-                                isSelected={(cell === selectedCell)}
-                                setSelectedCell={setCelectedCell}
-                                isAvailable={availableCells.includes(cell)}
+                                isSelected={(cell === selectedCellWithFigure)}
+                                isAvailableToMove={availableToMoveCells.includes(cell)}
+                                isAvailableToAttack={availableToAttackCells.includes(cell)}
+                                onCellClick={onCellClick}
                             />)}
                     </React.Fragment >)}
 

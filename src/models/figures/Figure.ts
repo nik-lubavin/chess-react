@@ -10,16 +10,19 @@ export enum FiguresEnum {
     ROOK = 'rook',
 }
 
-export class Figure {
-    public logo: any;
-    public figureType!: FiguresEnum;
+export abstract class Figure {
+    abstract figureType: FiguresEnum;
+    abstract logo: any;
 
     constructor(
-        public color: Colors
+        public color: Colors,
+        protected x: number,
+        protected y: number,
     ) { }
 
     canMove(cell: Cell): boolean {
         return false;
     }
 
+    abstract calculateAvailableToMoveCells(selectedCell: Cell): Cell[]
 }

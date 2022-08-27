@@ -5,11 +5,18 @@ import { Cell } from '../models/Cell';
 interface CellProps {
     cell: Cell;
     isSelected: boolean;
-    setSelectedCell: (cell: Cell) => void;
-    isAvailable: boolean
+    isAvailableToMove: boolean;
+    isAvailableToAttack: boolean;
+    onCellClick: (cell: Cell) => void;
 }
 
-const CellComponent: FC<CellProps> = ({ cell, isSelected, setSelectedCell, isAvailable }) => {
+const CellComponent: FC<CellProps> = ({
+    cell,
+    isSelected,
+    onCellClick,
+    isAvailableToMove,
+    isAvailableToAttack
+}) => {
     const [isFocused, setIsFocused] = useState(false);
 
     function onMouseEnterCell(event: MouseEvent<HTMLDivElement>) {
@@ -27,11 +34,12 @@ const CellComponent: FC<CellProps> = ({ cell, isSelected, setSelectedCell, isAva
                 cell.color,
                 isFocused ? 'cell-focused' : '',
                 isSelected ? 'cell-selected' : '',
-                isAvailable ? 'cell-available' : ''
+                isAvailableToMove ? 'cell-available' : '',
+                isAvailableToAttack ? 'cell-attackable' : '',
             ].join(' ')}
             onMouseEnter={onMouseEnterCell}
             onMouseLeave={onMouseLeaveCell}
-            onClick={() => setSelectedCell(cell)}
+            onClick={() => onCellClick(cell)}
         >
             {cell.figure?.logo && <img className='img' src={cell.figure.logo} alt='' />}
         </div>

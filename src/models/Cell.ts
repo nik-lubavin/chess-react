@@ -11,7 +11,7 @@ import { Rook } from "./figures/Rook";
 export class Cell {
     color: Colors;
     figure!: Figure | null;
-    available: boolean;
+    // available: boolean;
     id: number; // React key
 
     constructor(
@@ -20,7 +20,7 @@ export class Cell {
         public readonly y: number
     ) {
         this.color = (this.x + this.y) % 2 !== 0 ? Colors.BLACK : Colors.WHITE;
-        this.available = false;
+        // this.available = false;
         this.id = this.x + this.y * 10;
 
         this.initStartingFigure();
