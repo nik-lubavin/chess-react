@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { Colors } from "./Colors";
-import { FiguresEnum } from "./figures/Figure";
+import { Figure, FiguresEnum, IAvailableCells } from "./figures/Figure";
 
 export interface ICoords {
     x: number, y: number
@@ -21,21 +21,22 @@ export class Board {
     }
 
     public moveFigure(cellFrom: Cell, cellTo: Cell): void {
-        const figure = cellFrom.figure;
+        const figure = cellFrom.figure as Figure;
         cellFrom.figure = null;
         cellTo.figure = figure;
+        cellTo.figure.cell = cellTo;
     }
 
     public attackFigure(cellFrom: Cell, cellTo: Cell): void {
-        const figure = cellFrom.figure;
-        // const killedFigure = cellTo.figure;
+        const figure = cellFrom.figure as Figure;
         cellFrom.figure = null;
         cellTo.figure = figure;
+        cellTo.figure.cell = cellTo;
 
         // TODO add to graveyard
     }
 
-    private getCell({ x, y }: ICoords): Cell | undefined {
+    public getCell({ x, y }: ICoords): Cell | undefined {
         if (x < 0 || y < 0 || x > 7 || y > 7) return;
 
         const row = this.cells.find((row, idx) => idx === y);
@@ -44,7 +45,7 @@ export class Board {
         }
     }
 
-    private getManyCells(coords: ICoords[]): Cell[] {
+    public getManyCells(coords: ICoords[]): Cell[] {
         return coords.map(coord => this.getCell(coord)).filter(cell => !!cell) as Cell[];// doesnt understand that values are not undefined
     }
 
@@ -108,5 +109,157 @@ export class Board {
         }
 
         return [];
+    }
+
+    public verticalsHorizontals(x: number, y: number, color: Colors): IAvailableCells {
+        let result: IAvailableCells = { move: [], attack: [] };
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x - i, y: y };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x + i, y };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x, y: y - i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x, y: y + i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    public diagonals(x: number, y: number, color: Colors): IAvailableCells {
+        let result: IAvailableCells = { move: [], attack: [] };
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x - i, y: y - i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x - i, y: y + i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x + i, y: y - i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const coord: ICoords = { x: x + i, y: y + i };
+            const cell = this.getCell(coord);
+            if (cell && cell.figure) {
+                if (cell.figure.color !== color) {
+                    result.attack.push(cell);
+                }
+                // found a figure - no further move
+                break;
+
+            } else if (cell) {
+                result.move.push(cell);
+            } else {
+                // cell doesnt exist - out of board
+                break;
+            }
+        }
+
+        return result;
     }
 }

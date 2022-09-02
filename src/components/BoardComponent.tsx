@@ -18,6 +18,8 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
     const [availableToAttackCells, setAvailableToAttackCells] = useState<Cell[]>([]);
     const [turn, setTurn] = useState<Colors>(Colors.WHITE);
 
+
+
     function switchTurn() {
         const newTurn = turn === Colors.BLACK ? Colors.WHITE : Colors.BLACK;
         setTurn(newTurn);
@@ -32,13 +34,11 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
             return;
         }
 
-        const moveCells = board.calculateAvailableToMoveCells(selectedCellWithFigure);
-        setAvailableToMoveCells(moveCells);
-
-        const attackCells = board.calculateAvailableToAttackCells(selectedCellWithFigure);
-        console.log({ attackCells });
-
-        setAvailableToAttackCells(attackCells);
+        if (selectedCellWithFigure.figure) {
+            const { move, attack } = selectedCellWithFigure.figure.calculateAvailableCoords();
+            setAvailableToMoveCells(move);
+            setAvailableToAttackCells(attack);
+        }
 
     }, [selectedCellWithFigure, board])
 
@@ -63,7 +63,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
 
             // turn
             switchTurn();
-        } else if (!cell.figure && selectedCellWithFigure) {
+        } else if (!cell.figure) {
             //deselecting
             setSelectedCellWithFigure(null);
         }

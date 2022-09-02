@@ -2,10 +2,10 @@
 
 ## TODO
 
-* fix current issue
-* complete transfer to figure.calculate...
+* queen Bishop Rook Pawn - done
 * all movements and attacks
-* can move, can attack - to Figure class ??
+* Finish check
+* redux
 * graveyard
 * saving state after reload
 * timer

@@ -1,3 +1,4 @@
+import { Board } from "../Board";
 import { Cell } from "../Cell";
 import { Colors } from "../Colors";
 
@@ -10,19 +11,20 @@ export enum FiguresEnum {
     ROOK = 'rook',
 }
 
+export interface IAvailableCells {
+    move: Cell[];
+    attack: Cell[];
+}
+
 export abstract class Figure {
-    abstract figureType: FiguresEnum;
-    abstract logo: any;
+    public figureType!: FiguresEnum;
+    public logo: any;
 
     constructor(
+        public board: Board,
         public color: Colors,
-        protected x: number,
-        protected y: number,
+        public cell: Cell,
     ) { }
 
-    canMove(cell: Cell): boolean {
-        return false;
-    }
-
-    abstract calculateAvailableToMoveCells(selectedCell: Cell): Cell[]
+    abstract calculateAvailableCoords(): IAvailableCells
 }

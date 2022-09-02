@@ -32,48 +32,48 @@ export class Cell {
             switch (this.x) {
                 case 0:
                 case 7:
-                    this.figure = new Rook(Colors.BLACK);
+                    this.figure = new Rook(this.board, Colors.BLACK, this);
                     break;
                 case 1:
                 case 6:
-                    this.figure = new Knight(Colors.BLACK);
+                    this.figure = new Knight(this.board, Colors.BLACK, this);
                     break;
                 case 2:
                 case 5:
-                    this.figure = new Bishop(Colors.BLACK);
+                    this.figure = new Bishop(this.board, Colors.BLACK, this);
                     break;
                 case 4:
-                    this.figure = new King(Colors.BLACK);
+                    this.figure = new King(this.board, Colors.BLACK, this);
                     break;
                 case 3:
-                    this.figure = new Queen(Colors.BLACK);
+                    this.figure = new Queen(this.board, Colors.BLACK, this);
                     break;
 
             }
 
         } else if (this.y === 1) {
-            this.figure = new Pawn(Colors.BLACK);
+            this.figure = new Pawn(this.board, Colors.BLACK, this);
         } else if (this.y === 6) {
-            this.figure = new Pawn(Colors.WHITE);
+            this.figure = new Pawn(this.board, Colors.WHITE, this);
         } else if (this.y === 7) {
             switch (this.x) {
                 case 0:
                 case 7:
-                    this.figure = new Rook(Colors.WHITE);
+                    this.figure = new Rook(this.board, Colors.WHITE, this);
                     break;
                 case 1:
                 case 6:
-                    this.figure = new Knight(Colors.WHITE);
+                    this.figure = new Knight(this.board, Colors.WHITE, this);
                     break;
                 case 2:
                 case 5:
-                    this.figure = new Bishop(Colors.WHITE);
+                    this.figure = new Bishop(this.board, Colors.WHITE, this);
                     break;
                 case 4:
-                    this.figure = new King(Colors.WHITE);
+                    this.figure = new King(this.board, Colors.WHITE, this);
                     break;
                 case 3:
-                    this.figure = new Queen(Colors.WHITE);
+                    this.figure = new Queen(this.board, Colors.WHITE, this);
                     break;
             }
 
