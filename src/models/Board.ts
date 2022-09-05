@@ -46,7 +46,8 @@ export class Board {
     }
 
     public getManyCells(coords: ICoords[]): Cell[] {
-        return coords.map(coord => this.getCell(coord)).filter(cell => !!cell) as Cell[];// doesnt understand that values are not undefined
+        return coords.map(coord => this.getCell(coord))
+            .filter(cell => !!cell) as Cell[]; // have to define type explicitly
     }
 
     // TODO Move away
