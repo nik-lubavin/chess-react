@@ -18,8 +18,6 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard }) => {
     const [availableToAttackCells, setAvailableToAttackCells] = useState<Cell[]>([]);
     const [turn, setTurn] = useState<Colors>(Colors.WHITE);
 
-
-
     function switchTurn() {
         const newTurn = turn === Colors.BLACK ? Colors.WHITE : Colors.BLACK;
         setTurn(newTurn);

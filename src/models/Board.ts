@@ -1,4 +1,4 @@
-import { Cell } from "./Cell";
+import { Cell, IFigure } from "./Cell";
 import { Colors } from "./Colors";
 import { Figure, FiguresEnum, IAvailableCells } from "./figures/Figure";
 
@@ -6,17 +6,58 @@ export interface ICoords {
     x: number, y: number
 }
 
+interface IFigureLocation {
+    x: number, y: number, figure: FiguresEnum | undefined, color: Colors | undefined
+}
+
 export class Board {
     // rendering
     public cells: Cell[][] = [];
 
-    public initCells() {
+    public firstStart(): void {
+        const figuresLocations = this.loadFiguresLocation();
+
+        this.initCells(figuresLocations);
+    }
+
+    public initCells(figuresLocations: IFigureLocation[] | null): void {
+        this.cells = [];
         for (let y = 0; y < 8; y++) {
             const row: Cell[] = [];
             for (let x = 0; x < 8; x++) {
-                row.push(new Cell(this, x, y));
+                let figure: IFigure | undefined;
+                if (figuresLocations) {
+                    figure = this.getFigure(x, y, figuresLocations);
+                }
+                row.push(new Cell(this, x, y, figure));
             }
             this.cells.push(row)
+        }
+    }
+
+    private loadFiguresLocation(): IFigureLocation[] | null {
+        const cellsArray = localStorage.getItem('cellsArray');
+        if (!cellsArray) return null;
+
+        return JSON.parse(cellsArray) as IFigureLocation[]
+    }
+
+    private saveFiguresLocation(): void {
+        const figures: IFigureLocation[] =
+            this.cells.flat()
+                .filter(cell => !!cell.figure)
+                .map((cell) => ({ x: cell.x, y: cell.y, figure: cell.figure?.figureType, color: cell.figure?.color }))
+        localStorage.setItem('figures', JSON.stringify(figures));
+
+        console.log('saved');
+
+    }
+
+    private getFigure(x: number, y: number, figuresLocations: IFigureLocation[]): IFigure | undefined {
+        // TODO
+        const search = figuresLocations.find(item => item.x === x && item.y === y)
+        if (search) {
+            return { figureType: search.figure, color: search.color };
         }
     }
 
@@ -25,6 +66,8 @@ export class Board {
         cellFrom.figure = null;
         cellTo.figure = figure;
         cellTo.figure.cell = cellTo;
+
+        this.saveFiguresLocation();
     }
 
     public attackFigure(cellFrom: Cell, cellTo: Cell): void {
@@ -32,6 +75,8 @@ export class Board {
         cellFrom.figure = null;
         cellTo.figure = figure;
         cellTo.figure.cell = cellTo;
+
+        this.saveFiguresLocation();
 
         // TODO add to graveyard
     }

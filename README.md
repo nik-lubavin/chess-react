@@ -2,12 +2,14 @@
 
 ## TODO
 
+* fix issue
+* saving state after reload
 * redux
 * graveyard
-* saving state after reload
 * timer
-* restart button
 * castling
-* Finish check
+* Game over check
+* Save / avtosave / load menu (settings)
+* Styling
 
 * calculation of movements
