@@ -1,3 +1,4 @@
+import { GameState } from "../helpers/localStorage";
 import { Cell, IFigure } from "./Cell";
 import { Colors } from "./Colors";
 import { Figure, FiguresEnum, IAvailableCells } from "./figures/Figure";
@@ -7,54 +8,36 @@ export interface ICoords {
 }
 
 interface IFigureLocation {
-    x: number, y: number, figure: FiguresEnum | undefined, color: Colors | undefined
+    x: number, y: number, figure: FiguresEnum, color: Colors
 }
 
 export class Board {
     // rendering
     public cells: Cell[][] = [];
 
-    public firstStart(): void {
-        const figuresLocations = this.loadFiguresLocation();
-
-        this.initCells(figuresLocations);
-    }
-
-    public initCells(figuresLocations: IFigureLocation[] | null): void {
+    public initCells(gameState: GameState | null): void {
+        const figuresLocation = gameState ? gameState.figuresLocation : null;
         this.cells = [];
         for (let y = 0; y < 8; y++) {
             const row: Cell[] = [];
             for (let x = 0; x < 8; x++) {
                 let figure: IFigure | undefined;
-                if (figuresLocations) {
-                    figure = this.getFigure(x, y, figuresLocations);
+                // const isCached = Boolean(figuresLocations);
+                let cell: Cell;
+                if (figuresLocation) {
+                    figure = this.getFigure(x, y, figuresLocation);
+                    cell = Cell.WithCachedFigure(this, x, y, figure);
+                } else {
+                    cell = Cell.WithDefaultFigure(this, x, y);
                 }
-                row.push(new Cell(this, x, y, figure));
+                row.push(cell);
             }
             this.cells.push(row)
         }
     }
 
-    private loadFiguresLocation(): IFigureLocation[] | null {
-        const cellsArray = localStorage.getItem('cellsArray');
-        if (!cellsArray) return null;
-
-        return JSON.parse(cellsArray) as IFigureLocation[]
-    }
-
-    private saveFiguresLocation(): void {
-        const figures: IFigureLocation[] =
-            this.cells.flat()
-                .filter(cell => !!cell.figure)
-                .map((cell) => ({ x: cell.x, y: cell.y, figure: cell.figure?.figureType, color: cell.figure?.color }))
-        localStorage.setItem('figures', JSON.stringify(figures));
-
-        console.log('saved');
-
-    }
-
+    // helper function for parsing figuresLocation
     private getFigure(x: number, y: number, figuresLocations: IFigureLocation[]): IFigure | undefined {
-        // TODO
         const search = figuresLocations.find(item => item.x === x && item.y === y)
         if (search) {
             return { figureType: search.figure, color: search.color };
@@ -67,7 +50,6 @@ export class Board {
         cellTo.figure = figure;
         cellTo.figure.cell = cellTo;
 
-        this.saveFiguresLocation();
     }
 
     public attackFigure(cellFrom: Cell, cellTo: Cell): void {
@@ -75,8 +57,6 @@ export class Board {
         cellFrom.figure = null;
         cellTo.figure = figure;
         cellTo.figure.cell = cellTo;
-
-        this.saveFiguresLocation();
 
         // TODO add to graveyard
     }
@@ -95,67 +75,9 @@ export class Board {
             .filter(cell => !!cell) as Cell[]; // have to define type explicitly
     }
 
-    // TODO Move away
-    public calculateAvailableToMoveCells(selectedCell: Cell): Cell[] {
-        const figure = selectedCell.figure;
-        if (!figure) return [];
 
-        const { x: currentX, y: currentY } = selectedCell;
 
-        let movingCoords: ICoords[] = [];
 
-        if (figure.figureType === FiguresEnum.PAWN) {
-            if (figure.color === Colors.WHITE) {
-                movingCoords.push({ x: currentX, y: currentY - 1 });
-                if (currentY === 6) {
-                    movingCoords.push({ x: currentX, y: currentY - 2 });
-                }
-            } else {
-                // Black
-                movingCoords.push({ x: currentX, y: currentY + 1 });
-                if (currentY === 1) {
-                    movingCoords.push({ x: currentX, y: currentY + 2 });
-                }
-            }
-        }
-
-        if (movingCoords.length) {
-            const movingCells = this.getManyCells(movingCoords);
-            return movingCells.filter(cell => !cell.figure);
-        }
-
-        return [];
-    }
-
-    // TODO Move away
-    public calculateAvailableToAttackCells(selectedCell: Cell): Cell[] {
-        const figure = selectedCell.figure;
-        if (!figure) return [];
-
-        const { x: currentX, y: currentY } = selectedCell;
-
-        let attackingCoords: ICoords[] = [];
-
-        if (figure.figureType === FiguresEnum.PAWN) {
-            if (figure.color === Colors.WHITE) {
-                attackingCoords.push({ x: currentX - 1, y: currentY - 1 });
-                attackingCoords.push({ x: currentX + 1, y: currentY - 1 });
-
-            } else {
-                // Black
-                attackingCoords.push({ x: currentX - 1, y: currentY + 1 });
-                attackingCoords.push({ x: currentX + 1, y: currentY + 1 });
-            }
-        }
-
-        if (attackingCoords.length) {
-            const attackCells = this.getManyCells(attackingCoords);
-            const filtered = attackCells.filter(atCell => atCell.figure && atCell.figure?.color !== selectedCell.figure?.color);
-            return filtered;
-        }
-
-        return [];
-    }
 
     public verticalsHorizontals(x: number, y: number, color: Colors): IAvailableCells {
         let result: IAvailableCells = { move: [], attack: [] };

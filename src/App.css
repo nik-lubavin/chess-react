@@ -7,16 +7,27 @@
     width: 100vw;
     height: 100vh;
     display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+}
+
+.main-column {
+    width: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px red dashed;
+}
 
-    border: 1px dashed red;
+.menu {
+    background-color: lightgreen;
 }
 
 .board {
     width: calc(64px*8);
     height: calc(64px*8);
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
 }
 

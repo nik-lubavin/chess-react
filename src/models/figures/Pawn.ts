@@ -46,7 +46,8 @@ export class Pawn extends Figure {
             attackCoords.push({ x: this.cell.x + 1, y: this.cell.y + 1 });
         }
 
-        result.move = this.board.getManyCells(moveCoords).filter(cell => !!cell);
+        result.move = this.board.getManyCells(moveCoords)
+            .filter(cell => !!cell && !cell.figure);
         result.attack = this.board.getManyCells(attackCoords)
             .filter(cell => !!cell && !!cell.figure
                 && cell.figure.color !== this.color);
